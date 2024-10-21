@@ -19,7 +19,7 @@ class Planet:
             self.map[7][6] = ShipPiece("cabin_broken.ppm", "broken")
             self.map[6][5] = ShipPiece("exhaust_broken.ppm", "broken")
             self.map[6][6] = ShipPiece("engine_broken.ppm", "broken")
-            self.map[8][6] = ShipPiece("gear.ppm", "working")
+            self.map[8][6] = ShipPiece("exhaust.ppm", "working")
 
 
 
@@ -33,12 +33,27 @@ class Planet:
                 coords = [randint(0, size - 1), randint(0, size - 1)]
 
             # when this spot is found, assign a portal to it
-            self.map[coords[0]][coords[1]] = Portal()
+            self.map[coords[0]][coords[1]] = Portal(self, [coords[0], coords[1]])
 
         # Examples of making all three items on a planet
-        x = SparePart("./Img/screw.ppm") 
-        y = ShipPiece("./Img/cabin.ppm", "working")
-        z = Portal()
+        # x = SparePart("screw.ppm") 
+        # y = ShipPiece("cabin.ppm", "working")
+        # z = Portal()
+
+        sparepart_imgs = ['gear.ppm', 'screw.ppm', 'cake.ppm', 'bagel.ppm']
+        imgs_index = 0
+        for i in range(randint(4, 8)):  # number of parts random
+            # find set of random coordinates where there is an empty spot on map
+            coords = [randint(0, size - 1), randint(0, size - 1)]
+            while self.map[coords[0]][coords[1]] != None:
+                coords = [randint(0, size - 1), randint(0, size - 1)]
+
+            # when this spot is found, assign a part to it
+            self.map[coords[0]][coords[1]] = SparePart(sparepart_imgs[imgs_index])
+
+            imgs_index += 1
+            if imgs_index == len(sparepart_imgs):
+                imgs_index = 0
 
     def getEmptyLocation(self):
         """
@@ -49,6 +64,16 @@ class Planet:
                 if self.map[row][col] == None:
                     return [row, col]
         return -1  # no empty locations found
+    
+    def findPortal(self):
+        """
+        Finds the first portal when traversing the map
+        """
+        for row in range(len(self.map)):
+            for col in range(len(self.map[0])):
+                if isinstance(self.map[row][col], Portal):
+                    return self.map[row][col]
+        return -1  # no portals found
 
 
 if __name__ == "__main__":

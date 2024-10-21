@@ -6,11 +6,11 @@
 class SparePart:
     def __init__(self, imageName):
         # Part 1
-        self.img_name = imageName
+        self.img_name = "./Img/" + imageName
 
     def getImageName(self):
         # TODO Part 1
-        return "./Img/" + self.img_name
+        return self.img_name
 
     def getKind(self):
         return "part"
@@ -22,12 +22,12 @@ class ShipPiece:
         # Make the following instance fields
         # 1) The image name
         # 2) Its status; is it broken or working?
-        self.img_name = imageName
+        self.img_name = "./Img/" + imageName
         self.status = status
 
     def getImageName(self):
         # TODO Part 1
-        return "./Img/" + self.img_name
+        return self.img_name
 
     def getKind(self):
         return "ship"
@@ -38,7 +38,7 @@ class ShipPiece:
 
 
 class Portal:
-    def __init__(self):
+    def __init__(self, planet, loc, con_portal=None):
         # TODO Part 1
         # Make the following instance fields
         # 1) The current image name ("./Img/portal.ppm" or "./Img/portal_flashing.ppm")
@@ -49,6 +49,9 @@ class Portal:
         # 1) The map that this portal is on
         # 2) The location [row, column] of this portal on this map
         # 3) The portal at the other end of the wormhole (None if it isn't known yet)
+        self.planet = planet
+        self.loc = loc
+        self.con_portal = con_portal
 
     def getImageName(self):
         # TODO Part 1

@@ -21,6 +21,7 @@ class Game:
         # TODO Part 2
         # Your game needs instance fields for:
         # 1) a Stack of Portals the rover has traveled through
+        self.portal_stack = []  # list functions perfectly as a stack
 
         # TODO Part 3
         # Your game needs instance fields for:
@@ -63,6 +64,9 @@ class Game:
             self.rover_loc[0] -= 1
 
         # TODO Part 2
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        if isinstance(spot, Portal):
+            self.teleport()
 
     def goDown(self):
         """ Called by GUI when button clicked. 
@@ -72,10 +76,11 @@ class Game:
         # If legal, moves rover
         if self.rover_loc[0] != len(self.planet.map) - 1:
             self.rover_loc[0] += 1
-        pass 
 
         # TODO Part 2
-        # If the robot lands on a portal, teleport
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        if isinstance(spot, Portal):
+            self.teleport()
 
     def goLeft(self):
         """ Called by GUI when button clicked. 
@@ -85,10 +90,11 @@ class Game:
         # If legal, moves rover
         if self.rover_loc[1] != 0:
             self.rover_loc[1] -= 1
-        pass 
 
         # TODO Part 2
-        # If the robot lands on a portal, teleport
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        if isinstance(spot, Portal):
+            self.teleport()
 
     def goRight(self):
         """ Called by GUI when button clicked. 
@@ -98,16 +104,39 @@ class Game:
         # If legal, moves rover
         if self.rover_loc[1] != len(self.planet.map) - 1:
             self.rover_loc[1] += 1
-        pass 
 
         # TODO Part 2
-        # If the robot lands on a portal, teleport
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        if isinstance(spot, Portal):
+            self.teleport()
+
+    def teleport(self):  # only use when standing on portal
+        portal_loc = self.rover_loc
+        portal = self.planet.map[portal_loc[0]][portal_loc[1]]
+
+        if not isinstance(portal, Portal):
+            return  # not on a portal
+
+        if portal.con_portal != None:
+            self.rover_loc = portal.loc
+            self.planet = portal.planet
+            return
+
+        other_planet = Planet()
+        other_portal = other_planet.findPortal()
+
+        portal.con_portal = other_portal
+        other_portal.con_portal = portal
+
+        self.rover_loc = other_portal.loc
+        self.planet = other_planet
+
 
     def showWayBack(self):
         """ Called by GUI when button clicked.
             Flash the portal leading towards home. """
         # TODO Part 2
-        pass 
+        return self.portal_stack.pop()
 
     def getInventory(self):
         """ Called by GUI when inventory updates.
