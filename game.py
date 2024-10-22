@@ -118,8 +118,13 @@ class Game:
             return  # not on a portal
 
         if portal.con_portal != None:
-            self.rover_loc = portal.loc
-            self.planet = portal.planet
+            self.rover_loc = portal.con_portal.loc
+            self.planet = portal.con_portal.planet
+
+            if portal == self.portal_stack[0]:
+                self.portal_stack.pop()
+            else:
+                self.portal_stack.append(portal)
             return
 
         other_planet = Planet()
@@ -131,12 +136,17 @@ class Game:
         self.rover_loc = other_portal.loc
         self.planet = other_planet
 
+        if portal == self.portal_stack[0]:
+                self.portal_stack.pop()
+        else:
+                self.portal_stack.append(portal)
+
 
     def showWayBack(self):
         """ Called by GUI when button clicked.
             Flash the portal leading towards home. """
         # TODO Part 2
-        return self.portal_stack.pop()
+        return self.portal_stack[0]
 
     def getInventory(self):
         """ Called by GUI when inventory updates.
