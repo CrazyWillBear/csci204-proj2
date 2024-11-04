@@ -4,6 +4,8 @@ To make more ppm files, open a gif or jpg in xv and save as ppm raw.
 from GUI.graphics import Point
 from items import SparePart, ShipPiece, Portal
 from planet import Planet
+from stack import LinkedStack
+from mylist import MyList
 
 class Game:
     SIZE = 15                 # 15x15 squares in the map
@@ -21,13 +23,13 @@ class Game:
         # TODO Part 2
         # Your game needs instance fields for:
         # 1) a Stack of Portals the rover has traveled through
-        self.portal_stack = []  # list functions perfectly as a stack
+        self.stack = LinkedStack()  # list functions perfectly as a stack
 
         # TODO Part 3
         # Your game needs instance fields for:
         # 1) a List of items in your inventory
         # 2) a Queue of tasks to fix the broken ship pieces
-        pass
+        self.inventory = MyList()
 
     def getRoverImage(self):
         """ Called by GUI when screen updates.
@@ -110,43 +112,44 @@ class Game:
         if isinstance(spot, Portal):
             self.teleport()
 
-    def teleport(self):  # only use when standing on portal
+    def teleport(self):
         portal_loc = self.rover_loc
         portal = self.planet.map[portal_loc[0]][portal_loc[1]]
 
         if not isinstance(portal, Portal):
             return  # not on a portal
 
-        if portal.con_portal != None:
+        if portal.con_portal is not None:
+            # heading towards your ship
             self.rover_loc = portal.con_portal.loc
             self.planet = portal.con_portal.planet
 
-            if portal == self.portal_stack[0]:
-                self.portal_stack.pop()
+            # check if the top of the stack is the portal we stepped on
+            if len(self.stack) > 0 and self.stack.peek() == portal:
+                self.stack.pop()  # going towards home, pop the portal stepped on
             else:
-                self.portal_stack.append(portal)
-            return
-
-        other_planet = Planet()
-        other_portal = other_planet.findPortal()
-
-        portal.con_portal = other_portal
-        other_portal.con_portal = portal
-
-        self.rover_loc = other_portal.loc
-        self.planet = other_planet
-
-        if portal == self.portal_stack[0]:
-                self.portal_stack.pop()
+                self.stack.push(portal)  # moving away from home, push the portal landed on
         else:
-                self.portal_stack.append(portal)
+            # heading away from your ship
+            other_planet = Planet()
+            other_portal = other_planet.findPortal()
 
+            # connect the portals
+            portal.con_portal = other_portal
+            other_portal.con_portal = portal
+
+            self.rover_loc = other_portal.loc
+            self.planet = other_planet
+
+            # add the portal landed on to the stack
+            self.stack.push(other_portal)
 
     def showWayBack(self):
         """ Called by GUI when button clicked.
             Flash the portal leading towards home. """
         # TODO Part 2
-        return self.portal_stack[0]
+        if len(self.stack) > 0:
+            self.stack.peek().img_name = "./Img/portal_flashing.ppm"
 
     def getInventory(self):
         """ Called by GUI when inventory updates.
@@ -156,7 +159,20 @@ class Game:
 		1 rug
 	  """
         # TODO Part 3
-        pass 
+        d = {}
+
+        for i in range(len(self.inventory)):
+            item = self.inventory.peek(i)
+            if item.getName() not in d.keys():
+                d[item.getName()] = 1
+            else:
+                d[item.getName()] += 1
+
+        s = ""
+        for key in d:
+            s += str(d[key]) + " " + key + "\n"
+
+        return s[:-2]
 
     def pickUp(self):
         """ Called by GUI when button clicked. 
@@ -164,7 +180,10 @@ class Game:
 		or ship component), pick it up and add it
 		to the inventory. """
         # TODO Part 3
-        pass 
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        if isinstance(spot, SparePart):
+            self.inventory.insert(spot)
+            self.planet.map[self.rover_loc[0]][self.rover_loc[1]] = None
 
     def getCurrentTask(self):
         """ Called by GUI when task updates.
@@ -173,7 +192,7 @@ class Game:
 		'You win!' 
  	  """
         # TODO Part 3
-        pass 
+        
 
     def performTask(self):
         """ Called by the GUI when button clicked.

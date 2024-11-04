@@ -15,6 +15,9 @@ class SparePart:
     def getKind(self):
         return "part"
 
+    def getName(self):
+        return self.img_name.split("/")[-1].replace(".ppm", "")
+
 
 class ShipPiece:
     def __init__(self, imageName, status):
@@ -22,12 +25,15 @@ class ShipPiece:
         # Make the following instance fields
         # 1) The image name
         # 2) Its status; is it broken or working?
-        self.img_name = "./Img/" + imageName
+        self.img_name = imageName
         self.status = status
 
     def getImageName(self):
         # TODO Part 1
-        return self.img_name
+        if self.status == 'broken':
+            return "./Img/" + self.img_name.replace(".", "_broken.")
+
+        return "./Img/" + self.img_name
 
     def getKind(self):
         return "ship"
@@ -35,6 +41,13 @@ class ShipPiece:
     def getStatus(self):
         # TODO Part 1
         return self.status
+
+    def setStatus(self, status):
+        """ 'working' or 'broken' """
+        self.status = status
+    
+    def getName(self):
+        return self.img_name.split("/")[-1].replace(".ppm", "")
 
 
 class Portal:
