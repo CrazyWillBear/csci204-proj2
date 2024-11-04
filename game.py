@@ -6,6 +6,7 @@ from items import SparePart, ShipPiece, Portal
 from planet import Planet
 from stack import LinkedStack
 from mylist import MyList
+from myqueue import LinkedQueue
 
 class Game:
     SIZE = 15                 # 15x15 squares in the map
@@ -30,6 +31,7 @@ class Game:
         # 1) a List of items in your inventory
         # 2) a Queue of tasks to fix the broken ship pieces
         self.inventory = MyList()
+        self.tasks = LinkedQueue()
 
     def getRoverImage(self):
         """ Called by GUI when screen updates.
