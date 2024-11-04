@@ -1,12 +1,14 @@
 """ Game to play 'Lost Rovers'. This is the file you edit.
 To make more ppm files, open a gif or jpg in xv and save as ppm raw.
 """
+import random
 from GUI.graphics import Point
 from items import SparePart, ShipPiece, Portal
 from planet import Planet
 from stack import LinkedStack
 from mylist import MyList
 from myqueue import LinkedQueue
+from task import Task
 
 class Game:
     SIZE = 15                 # 15x15 squares in the map
@@ -33,6 +35,27 @@ class Game:
         self.inventory = MyList()
         self.tasks = LinkedQueue()
 
+        # These are the components that need to be fixed
+        task_names = ['Fix engine', 'Fix cabin', 'Fix exhaust', 'Engine']
+        random.shuffle(task_names)  # shuffle them so they are in random order
+        for name in task_names:
+            self.tasks.enqueue(self.generateTask(name))  # generate the tasks
+
+    def generateTask(self, name):
+        newTask = Task(name)
+
+        # get random types
+        types = ['screw', 'lettuce', 'cake', 'bagel', 'gear']
+        num_types = random.randint(2, 4)
+
+        # add the components randomly
+        for component in random.sample(types, num_types):
+            newTask.addComponent(random.randint(2, 4), component)
+
+        return newTask
+
+
+
     def getRoverImage(self):
         """ Called by GUI when screen updates.
             Returns image name (as a string) of the rover. 
@@ -45,6 +68,11 @@ class Game:
             Returns location (as a Point). """
         # TODO Part 1
         return Point(self.rover_loc[1], self.rover_loc[0]) # backwards of what you expect
+
+    def setRoverLocation(self, x, y):
+        """Sets the rover location to the given Point."""
+        self.rover_loc = [y, x]
+
 
     def getImage(self, point):
         """ Called by GUI when screen updates.
@@ -174,7 +202,7 @@ class Game:
         for key in d:
             s += str(d[key]) + " " + key + "\n"
 
-        return s[:-2]
+        return s[:-1]
 
     def pickUp(self):
         """ Called by GUI when button clicked. 
@@ -193,7 +221,7 @@ class Game:
 		'Fix the engine using 2 cake, 3 rugs' or
 		'You win!' 
  	  """
-        # TODO Part 3
+        return str(self.tasks.peek())
         
 
     def performTask(self):
@@ -203,7 +231,25 @@ class Game:
             ship piece and removes parts from inventory. If
             we run out of tasks, we win. """
         # TODO Part 3
-        pass 
+        spot = self.planet.map[self.rover_loc[0]][self.rover_loc[1]]
+        task = self.tasks.peek()
+        task_name = task.getName()
+        task_components = task.getComponents()
+
+        print(self.inventory)
+
+        if isinstance(spot, ShipPiece) and spot.getName() in task.getName().lower():
+            for component in task_components:
+                count = self.inventory.countPartsWithName(component)
+                
+                if count == None or count < task_components[component]:
+                    return
+                else:
+                    for _ in range(count):
+                        self.inventory.delete(self.inventory.findPartWithName(component))
+            spot.setStatus("working")
+            self.tasks.dequeue()
+
 
     # Put other methods here as needed if nay.
 

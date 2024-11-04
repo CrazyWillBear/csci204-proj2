@@ -15,10 +15,10 @@ class Planet:
         # Setup the starting map (when starting is True)
         # It has spaceship components, spare parts, and wormholes
         if starting:
-            self.map[7][5] = ShipPiece("engine_broken.ppm", "broken")
-            self.map[7][6] = ShipPiece("cabin_broken.ppm", "broken")
-            self.map[6][5] = ShipPiece("exhaust_broken.ppm", "broken")
-            self.map[6][6] = ShipPiece("engine_broken.ppm", "broken")
+            self.map[7][5] = ShipPiece("engine.ppm", "broken")
+            self.map[7][6] = ShipPiece("cabin.ppm", "broken")
+            self.map[6][5] = ShipPiece("exhaust.ppm", "broken")
+            self.map[6][6] = ShipPiece("engine.ppm", "broken")
             self.map[8][6] = ShipPiece("exhaust.ppm", "working")
 
 
@@ -40,7 +40,7 @@ class Planet:
         # y = ShipPiece("cabin.ppm", "working")
         # z = Portal()
 
-        sparepart_imgs = ['gear.ppm', 'screw.ppm', 'cake.ppm', 'bagel.ppm']
+        sparepart_imgs = ['gear.ppm', 'screw.ppm', 'cake.ppm', 'bagel.ppm', 'lettuce.ppm']
         imgs_index = 0
         for i in range(randint(4, 8)):  # number of parts random
             # find set of random coordinates where there is an empty spot on map
